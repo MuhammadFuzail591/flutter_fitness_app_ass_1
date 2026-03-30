@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/category_model.dart';
 import 'package:flutter_application_1/models/diet_model.dart';
 import 'package:flutter_application_1/models/popular_model.dart';
+import 'package:flutter_application_1/widgets/favorite_button.dart';
+import 'package:flutter_application_1/widgets/dark_mode_switch.dart';
+import 'package:flutter_application_1/widgets/calorie_counter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,6 +42,8 @@ class _HomePageState extends State<HomePage> {
       body: ListView(
         children: [
           _searchField(),
+          SizedBox(height: 40),
+          CalorieCounter(),
           SizedBox(height: 40),
           _categoriesSection(),
           SizedBox(height: 40),
@@ -112,14 +117,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: SvgPicture.asset(
-                            'assets/icons/button.svg',
-                            width: 30,
-                            height: 30,
-                          ),
-                        ),
+                        FavoriteButton(),
                       ],
                     ),
                   );
@@ -374,6 +372,7 @@ class _HomePageState extends State<HomePage> {
       ),
 
       actions: [
+        DarkModeSwitch(),
         GestureDetector(
           onTap: () {},
 
