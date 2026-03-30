@@ -12,11 +12,15 @@ class _CalorieCounterState extends State<CalorieCounter> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subTextColor = isDark ? Color(0xffA8A8A8) : Color(0xff7B6F72);
+
     return Container(
       margin: EdgeInsets.only(left: 20, right: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Color(0xff92A3FD).withValues(alpha: 0.2),
+        color: Color(0xff92A3FD).withValues(alpha: isDark ? 0.15 : 0.2),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -26,7 +30,7 @@ class _CalorieCounterState extends State<CalorieCounter> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight(600),
-              color: Colors.black,
+              color: textColor,
             ),
           ),
           SizedBox(height: 10),
@@ -42,7 +46,7 @@ class _CalorieCounterState extends State<CalorieCounter> {
             'calories',
             style: TextStyle(
               fontSize: 14,
-              color: Color(0xff7B6F72),
+              color: subTextColor,
             ),
           ),
           SizedBox(height: 10),

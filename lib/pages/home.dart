@@ -8,7 +8,10 @@ import 'package:flutter_application_1/widgets/calorie_counter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeToggle;
+
+  HomePage({super.key, required this.isDarkMode, required this.onThemeToggle});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,14 +22,6 @@ class _HomePageState extends State<HomePage> {
   List<DietModel> diets = [];
   List<PopularDietsModel> popularDiets = [];
 
-  // void _getCategories() {
-  //   categories = CategoryModel.getCategories();
-  // }
-
-  // void _getDiets() {
-  //   diets = DietModel.getDiets();
-  // }
-
   void _getInitialInfo() {
     categories = CategoryModel.getCategories();
     diets = DietModel.getDiets();
@@ -36,18 +31,25 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _getInitialInfo();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subTextColor = isDark ? Color(0xffA8A8A8) : Color(0xff7B6F72);
+    final cardColor = isDark ? Color(0xff2C2C2E) : Colors.white;
+    final iconBgColor = isDark ? Color(0xff3A3A3C) : Color(0xffF7F8F8);
+    final searchFillColor = isDark ? Color(0xff2C2C2E) : Colors.white;
+
     return Scaffold(
-      appBar: appBar(),
-      backgroundColor: Colors.white,
+      appBar: appBar(textColor, iconBgColor),
       body: ListView(
         children: [
-          _searchField(),
+          _searchField(searchFillColor, textColor, subTextColor),
           SizedBox(height: 40),
           CalorieCounter(),
           SizedBox(height: 40),
-          _categoriesSection(),
+          _categoriesSection(textColor, isDark),
           SizedBox(height: 40),
-          _dietSection(),
+          _dietSection(textColor, subTextColor, isDark),
           SizedBox(height: 40),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   'Popular',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: textColor,
                     fontSize: 18,
                     fontWeight: FontWeight(600),
                   ),
@@ -74,12 +76,14 @@ class _HomePageState extends State<HomePage> {
                     height: 100,
                     decoration: BoxDecoration(
                       color: popularDiets[index].boxIsSelected
-                          ? Colors.white
+                          ? cardColor
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xff1D1617).withValues(alpha: 0.07),
+                          color: isDark
+                              ? Colors.black.withValues(alpha: 0.3)
+                              : Color(0xff1D1617).withValues(alpha: 0.07),
                           offset: Offset(0, 10),
                           blurRadius: 40,
                           spreadRadius: 0,
@@ -94,7 +98,6 @@ class _HomePageState extends State<HomePage> {
                           width: 65,
                           height: 65,
                         ),
-
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,14 +106,14 @@ class _HomePageState extends State<HomePage> {
                               popularDiets[index].name,
                               style: TextStyle(
                                 fontWeight: FontWeight(500),
-                                color: Colors.black,
+                                color: textColor,
                                 fontSize: 16,
                               ),
                             ),
                             Text(
                               '${popularDiets[index].level} | ${popularDiets[index].duration} | ${popularDiets[index].calorie}',
-                              style: const TextStyle(
-                                color: Color(0xff7B6F72),
+                              style: TextStyle(
+                                color: subTextColor,
                                 fontSize: 13,
                                 fontWeight: FontWeight(400),
                               ),
@@ -131,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column _dietSection() {
+  Column _dietSection(Color textColor, Color subTextColor, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -140,21 +143,21 @@ class _HomePageState extends State<HomePage> {
           child: Text(
             'Recommendation\nfor Diet',
             style: TextStyle(
-              color: Colors.black,
+              color: textColor,
               fontSize: 18,
               fontWeight: FontWeight(600),
             ),
           ),
         ),
         SizedBox(height: 15),
-        Container(
+        SizedBox(
           height: 240,
           child: ListView.separated(
             itemBuilder: (context, index) {
               return Container(
                 width: 210,
                 decoration: BoxDecoration(
-                  color: diets[index].boxColor.withValues(alpha: 0.3),
+                  color: diets[index].boxColor.withValues(alpha: isDark ? 0.15 : 0.3),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -167,21 +170,20 @@ class _HomePageState extends State<HomePage> {
                           diets[index].name,
                           style: TextStyle(
                             fontWeight: FontWeight(500),
-                            color: Colors.black,
+                            color: textColor,
                             fontSize: 16,
                           ),
                         ),
                         Text(
                           '${diets[index].level} | ${diets[index].duration} | ${diets[index].calorie}',
-                          style: const TextStyle(
-                            color: Color(0xff7B6F72),
+                          style: TextStyle(
+                            color: subTextColor,
                             fontSize: 13,
                             fontWeight: FontWeight(400),
                           ),
                         ),
                       ],
                     ),
-
                     Container(
                       height: 45,
                       width: 130,
@@ -225,7 +227,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column _categoriesSection() {
+  Column _categoriesSection(Color textColor, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -234,14 +236,14 @@ class _HomePageState extends State<HomePage> {
           child: Text(
             'Category',
             style: TextStyle(
-              color: Colors.black,
+              color: textColor,
               fontSize: 18,
               fontWeight: FontWeight(600),
             ),
           ),
         ),
         SizedBox(height: 15),
-        Container(
+        SizedBox(
           height: 120,
           child: ListView.separated(
             itemCount: categories.length,
@@ -252,7 +254,7 @@ class _HomePageState extends State<HomePage> {
               return Container(
                 width: 100,
                 decoration: BoxDecoration(
-                  color: categories[index].boxColor.withValues(alpha: 0.3),
+                  color: categories[index].boxColor.withValues(alpha: isDark ? 0.15 : 0.3),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -262,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? Color(0xff3A3A3C) : Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: Padding(
@@ -274,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                       categories[index].name,
                       style: TextStyle(
                         fontWeight: FontWeight(400),
-                        color: Colors.black,
+                        color: textColor,
                         fontSize: 14,
                       ),
                     ),
@@ -288,7 +290,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _searchField() {
+  Container _searchField(Color fillColor, Color textColor, Color hintColor) {
     return Container(
       margin: EdgeInsets.only(top: 40, left: 20, right: 20),
       decoration: BoxDecoration(
@@ -301,25 +303,25 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       child: TextField(
+        style: TextStyle(color: textColor),
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: fillColor,
           hintText: "Search here",
-          hintStyle: TextStyle(color: Color(0xffDDDADA), fontSize: 14),
+          hintStyle: TextStyle(color: hintColor, fontSize: 14),
           contentPadding: EdgeInsets.all(15),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(12),
             child: SvgPicture.asset('assets/icons/Search.svg'),
           ),
-
-          suffixIcon: Container(
+          suffixIcon: SizedBox(
             width: 100,
             child: IntrinsicHeight(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   VerticalDivider(
-                    color: Colors.black,
+                    color: textColor,
                     thickness: 0.1,
                     indent: 10,
                     endIndent: 10,
@@ -341,17 +343,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AppBar appBar() {
+  AppBar appBar(Color textColor, Color iconBgColor) {
     return AppBar(
       title: Text(
         "Fuzail Project",
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
       ),
-      backgroundColor: Colors.white,
       elevation: 0.0,
       centerTitle: true,
       leading: GestureDetector(
@@ -360,7 +361,7 @@ class _HomePageState extends State<HomePage> {
           margin: EdgeInsets.all(10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Color(0xffF7F8F8),
+            color: iconBgColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: SvgPicture.asset(
@@ -370,18 +371,19 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-
       actions: [
-        DarkModeSwitch(),
+        DarkModeSwitch(
+          isDarkMode: widget.isDarkMode,
+          onToggle: widget.onThemeToggle,
+        ),
         GestureDetector(
           onTap: () {},
-
           child: Container(
             margin: EdgeInsets.all(10),
             alignment: Alignment.center,
             width: 37,
             decoration: BoxDecoration(
-              color: Color(0xffF7F8F8),
+              color: iconBgColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: SvgPicture.asset(
